@@ -1,7 +1,7 @@
 import sys
 import os
 
-# import scriptCreator
+import scriptCreator
 
 task = input("What is the task? (a)submit, (b)resubmit, (c)cancel Jobs: : ")
 print(task)
@@ -55,42 +55,62 @@ for s in parameterlist:
     print(s," : ",parameterlist[s])
 
 
-# L=scriptCreator.Lpara("L",parameterlist["L"])
-L=Lpara("L",parameterlist["L"])
+L=scriptCreator.Lpara("L",parameterlist["L"])
+# L=Lpara("L",parameterlist["L"])
 
 L_num = L.toL()
 L_str = L.toStr()
 
-# S=scriptCreator.Spara("Seed",parameterlist["seed"])
-S=Spara("Seed",parameterlist["seed"])
+S=scriptCreator.Spara("Seed",parameterlist["seed"])
+# S=Spara("Seed",parameterlist["seed"])
 
 S_num = S.toS()
 S_str = S.toStr()
 
-# print(S_num)
-# print(S_str)
+print(S_num)
+print(S_str)
 
 
-# J=scriptCreator.paraList("Jdis",parameterlist["J"])
-J=paraList("Jdis",parameterlist["J"])
+J=scriptCreator.paraList("Jdis",parameterlist["J"])
+# J=paraList("Jdis",parameterlist["J"])
 
 J_num = J.toFlo()
 J_str = J.toStr()
 
-# D=scriptCreator.paraList("Dim",parameterlist["D"])
-D=paraList("Dim",parameterlist["D"])
+D=scriptCreator.paraList("Dim",parameterlist["D"])
+# D=paraList("Dim",parameterlist["D"])
 
 D_num = D.toFlo()
 D_str = D.toStr()
 
+tSDRG_path="/home/aronton/tSDRG_random"
+# tSDRG_record="${tSDRG_path}/tSDRG/Main_${Spin}/submit_record/"
+# fileName="tSDRG_Spin="${Spin}";BC=${BC}"";P="${P}";B="${bonDim}";L="${L1}"_"${L2}"("${space_L}");J="${J1dis}"_"${J2dis}"("${space_J_100}");D="${dim1}"_"${dim2}"("${space_D_100}");seed1="${s1}"_seed2="${s2}";Partition="${partition}";Number_of_core="${Ncore}
 
+# fileDir=${tSDRG_record}${now_date}${fileName}"/"
 
-# for i,m in enumerate(L_str):
-#     for j,n in enumerate(J_str):
-#         for k,o in enumerate(D_str):
-#             for l in range(len(S_num)-1):
-#                 samplelist = list(range(S_num[l],S_num[l+1]))
-#                 for s in samplelist:
-#                     scriptName = m + "_" + n + "_" + o +"_" + str(s)
-#                     print(scriptName)
+# if [ -d "${fileDir}" ]; then
+#     # 目錄 /path/to/dir 存在
+#     echo -e "${fileDir}"
+# else
+#     # 目錄 /path/to/dir 不存在
+#     echo -e "mkdir -p ""${fileDir}"
+#     mkdir -p "${fileDir}"
+# fi
+
+# file=${fileDir}${fileName}
+
+# echo -e "\n\ntSDRG_Spin="${Spin}";BC=${BC}"";P="${P}";B="${bonDim}";""\n""L="${L1}"_"${L2}"("${space_L}");""\n""J="${J1dis}"_"${J2dis}"("${space_J_100}");""\n""D="${dim1}"_"${dim2}"("${space_D_100}");""\n""seed1="${s1}"_seed2="${s2}";""\n""Partition="${partition}";Number_of_core="${Ncore}"\n\n" >> "${file}.txt"
+
+# echo -e "\n\ntSDRG_Spin="${Spin}";BC=${BC}"";P="${P}";B="${bonDim}";""\n""L="${L1}"_"${L2}"("${space_L}");""\n""J="${J1dis}"_"${J2dis}"("${space_J_100}");""\n""D="${dim1}"_"${dim2}"("${space_D_100}");""\n""seed1="${s1}"_seed2="${s2}";""\n""Partition="${partition}";Number_of_core="${Ncore}"\n\n"
+
+# date >> "${file}.txt"
+
+for i,m in enumerate(L_str):
+    for j,n in enumerate(J_str):
+        for k,o in enumerate(D_str):
+            for l in range(len(S_num)):
+                for s in S_str[l]:
+                    scriptName = m + "_" + n + "_" + o +"_" + str(s)
+                    print(scriptName)
                 # print(f"{m}_{n}_{o}_{s}")

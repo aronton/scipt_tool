@@ -67,14 +67,14 @@ class Spara(paraList):
         if self.x2>0:
             strSeed = []
             for i in list(range(self.x1 ,self.x2,self.dx)):
-                a = [self.title + str(self.x1 + j*self.dx) for j in list(range(i,i+self.dx))]
-            strSeed.append(a)
+                a = [self.title + str(j) for j in list(range(i,i+self.dx))]
+                strSeed.append(a)
             # numL = [ self.title + str(self.x1 + l*self.dx) for l in range(int((self.x2-self.x1)/self.dx) + 1)]
         else:
             strSeed = []
             for i in list(range(self.x1 ,self.x2,self.dx)):
-                a = [self.title + "N" + str((self.x1 + l*self.dx)*-1) for j in list(range(i,i+self.dx))]
-            strSeed.append(a)
+                a = [self.title + "N" + str(j) for j in list(range(i,i+self.dx))]
+                strSeed.append(a)
             # numL = [ self.title + "N" + str((self.x1 + l*self.dx)*-1) for l in range(int((self.x2-self.x1)/self.dx) + 1)]    
         return list(strSeed)    
     def __repr__(self):
