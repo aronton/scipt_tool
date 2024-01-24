@@ -197,6 +197,8 @@ def resubmit(L_str,J_str,D_str,S_num):
                 for s_i in range(len(S_num)):
                     for s in S_str[s_i]:
 def cancel(L_str,J_str,D_str,S_num):
+    job_list = os.popen("squeue -u aronton -o \"%%.12i %%.12P %%.90j %%.8T\"")
+    del job_list[0]
     for l_i,l in enumerate(L_str):
         for j_i,j in enumerate(J_str):
             for d_i,d in enumerate(D_str):
