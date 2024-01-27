@@ -82,6 +82,13 @@ D_num = D.toFlo()
 D_str = D.toStr()
 
 tSDRG_path="/home/aronton/tSDRG_random"
+
+# for l_i,l in enumerate(L_str):
+#     for j_i,j in enumerate(J_str):
+#         for d_i,d in enumerate(D_str):
+#             for s_i in range(len(S_num)):
+#                 for s in S_str[s_i]:
+#                     parameterlist.append({"Spin":Spin,"L":l,"J":j,"D":d,"P":Pdis,"BC":BC,"seed1":s1,"seed2":s2})
 # tSDRG_record=tSDRG_path + "/tSDRG" + "/Main_" + str(Spin) + "/submit_record"
 # fileName="/tSDRG_Spin=" + str(Spin) + ";BC=" + str(BC) + ";P="+ str(Pdis) + ";B=" + str(bondDim) \
 #     + ";L=" + str(L1) + "_" + str(L2) + "(" + str(dL) + ");J=" + str(J1) + "_" + str(J2) +"(" + str(dJ) + ");D="\
@@ -168,9 +175,9 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
 
     nt=datetime.datetime.now()
     now_date = "/" + str(nt.year) + "/" + str(nt.month) + "_" + str(nt.day)
-    now_time = "/" + str(nt.hour) + "_" + str(nt.minute) + "_" + str(nt.second)
+    now_time = "/" + str(nt.hour) + "_" + str(nt.minute)
     
-    fileDir=tSDRG_record + now_date + now_time
+    fileDir=tSDRG_record + now_date 
 
     if os.path.exists(fileDir):
         print(fileDir)
@@ -184,11 +191,21 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
             for d_i,d in enumerate(D_str):
                 for s_i in range(len(S_num)):
                     for s in S_str[s_i]:
-                        fh = open("run.sh",r)
-                        context = fh.readlines()
-                        scriptName = str(Spin) + "_" + "L" + str(l) + "_" + j + "_" + d + \
-                            "_" + "P" + str(Pdis) + "_" + "BC=" + str(BC) + "_Ncore=" + Ncore \
-                                + "_seed1=" + str(s1) + "_seed2=" + str(s2) + "_" + now_time
+                        jobName = str(Spin) + "_" + "L" + str(l) + "_" + j + "_" + d + \
+                                                "_" + "P" + str(Pdis) + "_" + "BC=" + str(BC) + "_Ncore=" + Ncore \
+                                                    + "_seed1=" + str(s1) + "_seed2=" + str(s2)
+                        scriptName = str(Spin) + jobName + "_" + now_time
+                        with open("run.sh", "rt") as file:
+                            context = file.read()
+                        with open(file, "wt") as file:
+                            context = context.replace("replace1", partition)
+                            context = context.replace("replace2", jobName)
+                            context = context.replace("replace3", Ncore)
+                            context = context.replace("replace3", scriptName)
+                            file.write(context)
+                        # scriptName = str(Spin) + "_" + "L" + str(l) + "_" + j + "_" + d + \
+                        #     "_" + "P" + str(Pdis) + "_" + "BC=" + str(BC) + "_Ncore=" + Ncore \
+                        #         + "_seed1=" + str(s1) + "_seed2=" + str(s2) + "_" + now_time
                 # print(f"{m}_{n}_{o}_{s}")
 def resubmit(L_str,J_str,D_str,S_num):
     for l_i,l in enumerate(L_str):

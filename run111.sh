@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --partition=replace1
+#SBATCH --partition=scopion2
 #SBATCH --ntasks=1
-#SBATCH --job-name=replace2
-#SBATCH --cpus-per-task=replace3
-#SBATCH --output=.replace4
+#SBATCH --job-name=example_random
+#SBATCH --cpus-per-task=4=4
+#SBATCH --output=.
 
 date
 
@@ -26,6 +26,15 @@ get_script_dir () {
 echo "script_directory"
 echo "$(get_script_dir)"
 
+#echo "The script name is        ==> ${0}"
+#echo "Total parameter number is ==> $#"
+
+#/home/aronton/tSDRG_random/tSDRG/Main/jobRecord/slurmOutput/fileName_random.out
+
+
+# [ "$#" -lt 8 ] && echo "The number of parameter is less than 8.  Stop here." && exit 0
+
+#echo "Your whole parameter is   ==> '$@'"
 echo "L         ==> ${1}"
 echo "J         ==> ${2}"
 echo "D         ==> ${3}"
@@ -37,6 +46,9 @@ echo "bonDim        ==> ${8}"
 echo "BC        ==> ${9}"
 echo "Ncore        ==> ${10}"
 echo "CheckOrNot        ==> ${11}"
+
+
+# ${L} ${J} ${D} ${localS1} ${localS2} ${Spin} ${bonDim} ${BC} ${Ncore} ${CheckOrNot}
 
 L=${1}
 
@@ -63,5 +75,8 @@ for (( s=0; s<${numOfinterval}; s=s+1 ))
 do
      echo "tSDRG_pathm/tSDRG/Main/Spin${spin}_random.exe ${L} ${bonDim} ${P} ${2} ${3} ${BC} ${s1} ${s2} ${CheckOrNot}"
 done
+# tSDRG_path/tSDRG/Main/Spin${spin}_random.exe ${L} ${bonDim} ${P} ${2} ${3} ${BC} ${s1} ${s2} ${CheckOrNot}
 
 date
+
+# ${L} ${J} ${D} ${localS1} ${localS2} ${Spin} ${bonDim} ${BC} ${Ncore} ${CheckOrNot}

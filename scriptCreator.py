@@ -79,3 +79,6 @@ class Spara(paraList):
         return list(strSeed)    
     def __repr__(self):
         return f'Point({self.x1}, {self.x2}, {self.dx})'
+
+if __name__ == '__main__':
+    main(paraList.toStr("Jdis",[0.1,0.5,0.1]))
