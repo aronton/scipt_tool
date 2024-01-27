@@ -40,6 +40,7 @@ Pdis=parameterlist["Pdis"]=input("Pdis : ")
 dx=parameterlist["dx"]=input("dx : ")
 bondDim=parameterlist["bondDim"]=input("bondDim : ")
 BC=parameterlist["BC"]=input("BC : ")
+mark=parameterlist["check_Or_Not"]
 
 # parameterlist["initialSampleNumber"]=int(input("initialSampleNumber : "))
 # parameterlist["finalSampleNumber"]=int(input("finalSampleNumber : "))
@@ -127,29 +128,6 @@ tSDRG_path="/home/aronton/tSDRG_random"
 
 def submut(parameterlist, Ncore, partition, tSDRG_path):
 
-    Spin=parameterlist["Spin"]
-    L1=parameterlist["L"]["L1"]
-    L2=parameterlist["L"]["L2"]
-    dL=parameterlist["L"]["delta_L"]
-
-    J1=parameterlist["J"]["J1"]
-    J2=parameterlist["J"]["J2"]
-    dJ=parameterlist["J"]["delta_J"]
-
-    D1=parameterlist["D"]["D1"]
-    D2=parameterlist["D"]["D2"]
-    dD=parameterlist["D"]["delta_D"]
-
-    s1=parameterlist["seed"]["s1"]
-    s2=parameterlist["seed"]["s2"]
-    ds=parameterlist["seed"]["delta_s"]
-
-    Pdis=parameterlist["Pdis"]=input("Pdis : ")
-    dx=parameterlist["dx"]=input("dx : ")
-    bondDim=parameterlist["bondDim"]=input("bondDim : ")
-    BC=parameterlist["BC"]=input("BC : ")
-    mark=parameterlist["check_Or_Not"]
-
     L=scriptCreator.Lpara("L",parameterlist["L"])
     L_num = L.toL()
     L_str = L.toStr()
@@ -203,10 +181,6 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
                             context = context.replace("replace3", Ncore)
                             context = context.replace("replace3", scriptName)
                             file.write(context)
-                        # scriptName = str(Spin) + "_" + "L" + str(l) + "_" + j + "_" + d + \
-                        #     "_" + "P" + str(Pdis) + "_" + "BC=" + str(BC) + "_Ncore=" + Ncore \
-                        #         + "_seed1=" + str(s1) + "_seed2=" + str(s2) + "_" + now_time
-                # print(f"{m}_{n}_{o}_{s}")
 def resubmit(L_str,J_str,D_str,S_num):
     for l_i,l in enumerate(L_str):
         for j_i,j in enumerate(J_str):
