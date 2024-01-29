@@ -3,12 +3,21 @@
 #SBATCH --ntasks=1
 #SBATCH --job-name=replace2
 #SBATCH --cpus-per-task=replace3
-#SBATCH --output=.replace4
+#SBATCH --output=replace4
 
 date
 
 echo -e "current dir:"
 pwd
+
+if [ -d "${replace4}" ]; then
+    # 目錄 /path/to/dir 存在
+    echo -e "${replace4}"
+else
+    # 目錄 /path/to/dir 不存在
+    echo -e "mkdir""${replace4}"
+    mkdir -p "${replace4}"
+fi
 
 get_script_dir () {
      SOURCE="${BASH_SOURCE[0]}"
@@ -26,42 +35,44 @@ get_script_dir () {
 echo "script_directory"
 echo "$(get_script_dir)"
 
-echo "L         ==> ${1}"
-echo "J         ==> ${2}"
-echo "D         ==> ${3}"
-echo "P        ==> ${4}"
-echo "s1        ==> ${5}"
-echo "s2        ==> ${6}"
-echo "spin        ==> ${7}"
-echo "bonDim        ==> ${8}"
-echo "BC        ==> ${9}"
-echo "Ncore        ==> ${10}"
-echo "CheckOrNot        ==> ${11}"
+Spin=${1}
 
-L=${1}
+L=${2}
 
-P=${4}
+J=${3}
 
-s1=${5}
+D=${4}
 
-s2=${6}
+BC=${5}
 
-spin=${7}
+bonDim=${6}
 
-bonDim=${8}
+Pdis=${7}
 
-BC=${9}
+s1=${8}
 
-Ncore=${10}
+s2=${9}
 
-CheckOrNot=${11}
+CheckOrNot=${10}
 
-numOfinterval="10000"
+Ncore=${11}
 
+echo "Spin         ==> $Spin"
+echo "L         ==> $L"
+echo "J         ==> $J"
+echo "D         ==> $D"
+echo "BC        ==> $BC"
+echo "bonDim        ==> $bonDim"
+echo "Pdis        ==> $Pdis"
+echo "s1        ==> $s1"
+echo "s2        ==> $s2"
+echo "CheckOrNot        ==> $CheckOrNot"
+echo "Ncore        ==> $Ncore"
 
-for (( s=0; s<${numOfinterval}; s=s+1 ))
-do
-     echo "tSDRG_pathm/tSDRG/Main/Spin${spin}_random.exe ${L} ${bonDim} ${P} ${2} ${3} ${BC} ${s1} ${s2} ${CheckOrNot}"
-done
+# for (( s=0; s<${numOfinterval}; s=s+1 ))
+# do
+#      echo "tSDRG_path/tSDRG/Main/Spin${spin}_random.exe $L $bonDim $Pdis $J $D $BC $s1 $s2 $CheckOrNot"
+# done
+echo "tSDRG_path/tSDRG/Main/Spin${Spin}_random.exe $L $bonDim $Pdis $J $D $BC $s1 $s2 $CheckOrNot"
 
 date

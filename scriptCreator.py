@@ -26,6 +26,10 @@ class paraList:
         return strlist
     def toFlo(self):
         return self.floatlist
+    def to100(self):
+        list100 = []
+        [list100.append(int(100*a)) for a in self.floatlist]
+        return list(list100)
     def __repr__(self):
         return f'Point({self.x1}, {self.x2}, {self.dx})'
 
@@ -58,10 +62,8 @@ class Spara(paraList):
     def toS(self):
         numSeed = []
         for i in list(range(self.x1 ,self.x2, self.dx)):
-            a = [j for j in list(range(i,i+5))]
+            a = [j for j in list(range(i,i+self.dx))]
             numSeed.append(a)
-        # print(numSeed)
-        # numL = [self.x1 + l*self.dx for l in range(int((self.x2-self.x1)/self.dx) + 1)]
         return list(numSeed)   
     def toStr(self):
         if self.x2>0:
@@ -69,16 +71,11 @@ class Spara(paraList):
             for i in list(range(self.x1 ,self.x2,self.dx)):
                 a = [self.title + str(j) for j in list(range(i,i+self.dx))]
                 strSeed.append(a)
-            # numL = [ self.title + str(self.x1 + l*self.dx) for l in range(int((self.x2-self.x1)/self.dx) + 1)]
         else:
             strSeed = []
             for i in list(range(self.x1 ,self.x2,self.dx)):
                 a = [self.title + "N" + str(j) for j in list(range(i,i+self.dx))]
                 strSeed.append(a)
-            # numL = [ self.title + "N" + str((self.x1 + l*self.dx)*-1) for l in range(int((self.x2-self.x1)/self.dx) + 1)]    
         return list(strSeed)    
     def __repr__(self):
         return f'Point({self.x1}, {self.x2}, {self.dx})'
-
-if __name__ == '__main__':
-    main(paraList.toStr("Jdis",[0.1,0.5,0.1]))
