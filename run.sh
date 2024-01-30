@@ -10,13 +10,15 @@ date
 echo -e "current dir:"
 pwd
 
-if [ -d "${replace4}" ]; then
+output=${13}
+
+if [ -d "${output}" ]; then
     # 目錄 /path/to/dir 存在
-    echo -e "${replace4}"
+    echo -e "${output}"
 else
     # 目錄 /path/to/dir 不存在
-    echo -e "mkdir""${replace4}"
-    mkdir -p "${replace4}"
+    echo -e "mkdir""${output}"
+    mkdir -p "${output}"
 fi
 
 get_script_dir () {
@@ -57,6 +59,8 @@ CheckOrNot=${10}
 
 Ncore=${11}
 
+tSDRG_path=${12}
+
 echo "Spin         ==> $Spin"
 echo "L         ==> $L"
 echo "J         ==> $J"
@@ -68,11 +72,12 @@ echo "s1        ==> $s1"
 echo "s2        ==> $s2"
 echo "CheckOrNot        ==> $CheckOrNot"
 echo "Ncore        ==> $Ncore"
+echo "tSDRG_path        ==> $tSDRG_path"
 
 # for (( s=0; s<${numOfinterval}; s=s+1 ))
 # do
 #      echo "tSDRG_path/tSDRG/Main/Spin${spin}_random.exe $L $bonDim $Pdis $J $D $BC $s1 $s2 $CheckOrNot"
 # done
-echo "tSDRG_path/tSDRG/Main/Spin${Spin}_random.exe $L $bonDim $Pdis $J $D $BC $s1 $s2 $CheckOrNot"
+echo $tSDRG_path"/tSDRG/Main_"$Spin"/Spin"$Spin"_random.exe $L $bonDim $Pdis $J $D $BC $s1 $s2 $CheckOrNot"
 
 date

@@ -134,8 +134,9 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
     tSDRG_record = tSDRG_path + "/tSDRG" + "/Main_" + str(Spin) + "/submit_record"
     record_dir = tSDRG_path + "/tSDRG" + "/Main_" + str(Spin) + "/jobRecord" 
     script_dir = record_dir + "/script" + "/" + str(BC) + "/B" + str(bondDim)
+    output_dir = record_dir + "/slurmOutput" + "/" + str(BC) + "/B" + str(bondDim)
 
-    fileName="/tSDR_Spin=" + str(Spin) + ";BC=" + str(BC) + ";P="+ str(Pdis) + ";B=" + str(bondDim) \
+    tSDRG_fileName="/tSDRG_Spin=" + str(Spin) + ";BC=" + str(BC) + ";P="+ str(Pdis) + ";B=" + str(bondDim) \
         + ";L=" + str(L_num[0]) + "_" + str(L_num[-1]) + "(" + str(L_num[1]-L_num[0])\
         + ");J=" + str(J_num[0]) + "_" + str(J_num[-1]) +"(" + str(J_100[1]-J_100[0]) \
         + ");D=" + str(D_num[0]) + "_" + str(D_num[-1]) + "(" + str(D_100[1]-D_100[0]) +");"\
@@ -143,51 +144,61 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
 
     nt=datetime.datetime.now()
     now_year = str(nt.year)
-    now_date = str(nt.month) + "_" + str(nt.day)
-    now_time = "H" + str(nt.hour) + "_M" + str(nt.minute) + "_M" + str(nt.second)
+    now_date = str(nt.year) + "_" + str(nt.month) + "_" + str(nt.day)
+    now_time = "H" + str(nt.hour) + "_M" + str(nt.minute) + "_S" + str(nt.second)
     
-    fileDir = tSDRG_record + "/" + now_year + "/" + now_date + "/" + now_time 
+    tSDRG_fileDir = tSDRG_record + "/" + now_year + "/" + now_date
 
-    if os.path.exists(fileDir):
-        print(fileDir)
+    if os.path.exists(tSDRG_fileDir):
+        print(tSDRG_fileDir)
     else:
-        os.makedirs(fileDir)
+        os.makedirs(tSDRG_fileDir)
 
-    filePath = fileDir + fileName
+    tSDRG_filePath = tSDRG_fileDir + tSDRG_fileName + "_" + now_time
 
-    # with open(filePath, "wt") as file:
-    #     file.write(fileName)
-    
-    print("filePath : ",filePath)
+    with open(tSDRG_filePath, "wt") as file:
+        file.write(tSDRG_fileName)
+
+    os.system( "cd " + tSDRG_path + "/tSDRG/Main_" + Spin)
+    print("cd " + tSDRG_path + "/tSDRG/Main_" + Spin)
+    print("tSDRG_filePath : ",tSDRG_filePath)
     for l_i,l in enumerate(L_str):
         for j_i,j in enumerate(J_str):
             for d_i,d in enumerate(D_str):
                 for s_i in range(len(S_num)):
                     s = S_num[s_i]
                     script_path = script_dir + "/" + l + "/" + j + "/" + d  
-                    # if os.path.exists(script_dir):
-                    #     print("exist : ", script_dir)
-                    # else:
-                    #     print("not exist : ", script_dir)
-                        # os.makedirs(fileDir)
+                    output_path = output_dir + "/" + l + "/" + j + "/" + d
+                    if os.path.exists(script_dir):
+                        print("exist : ", script_dir)
+                    else:
+                        print("not exist : ", script_dir)
+                        os.makedirs(fileDir)
                     jobName = "Spin" + str(Spin) + "_" + l + "_" + j + "_" + d + \
                                             "_" + "P" + str(Pdis) + "_" + "BC=" + str(BC) + "_Ncore=" + Ncore \
                                                 + "_seed1=" + str(s[0]) + "_seed2=" + str(s[-1])
                     script_name = jobName + "_" + now_time
-                    script_path = script_path + "/" + script_name
+                    script_path = script_path + "/" + script_name + "_random.sh"
+                    output_path = output_path + "/" + script_name + "_random.out"
+                    print("jobName : ",jobName)
                     print("script_path : ",script_path)
-                    # with open("run.sh", "rt") as file:
-                    #     context = file.read()
-                    # with open(script_path, "wt") as file:
-                    #     context = context.replace("replace1", partition)
-                    #     context = context.replace("replace2", jobName)
-                    #     context = context.replace("replace3", Ncore)
-                    #     context = context.replace("replace4", script_path)
-                    #     file.write(context)
-                    cmd = "sbatch " + script_path + " " + str(Spin) + " " + str(L_num[l_i]) + " " + str(J_num[j_i]) + \
-                        " " + str(D_num[d_i]) + " " + str(bondDim) + " " + str(Pdis) + " " + str(s[0]) + " " + str(s[-1]) + \
-                            " " + check_Or_Not + " " + str(Ncore)
-                    print("cmd : ",cmd)
+                    print("output_path : ",output_path)
+                    with open("run.sh", "rt") as file:
+                        context = file.read()
+                    with open(script_path, "wt") as file:
+                        context = context.replace("replace1", partition)
+                        context = context.replace("replace2", jobName)
+                        context = context.replace("replace3", Ncore)
+                        context = context.replace("replace4", output_path)
+                        file.write(context)
+                    submit_cmd_list = ["sbatch",script_path, str(Spin),str(L_num[l_i]),str(J_num[j_i]),str(D_num[d_i])\
+                    ,str(bondDim),str(Pdis),str(s[0]),str(s[-1]),check_Or_Not,str(Ncore),tSDRG_path,output_path]
+
+                    submit_cmd = " ".join(submit_cmd_list)
+                    # "sbatch" + script_path + " " + str(Spin) + " " + str(L_num[l_i]) + " " + str(J_num[j_i]) + \
+                    #     " " + str(D_num[d_i]) + " " + str(bondDim) + " " + str(Pdis) + " " + str(s[0]) + " " + str(s[-1]) + \
+                    #         " " + check_Or_Not + " " + str(Ncore) + " " + tSDRG_path
+                    print("submit_cmd : ",submit_cmd)
                     # os.system("sbatch " + script_path + )
     return 0
 # def resubmit(L_str,J_str,D_str,S_num):
