@@ -178,9 +178,9 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
                     else:
                         print("not exist : ", script_path)
                         os.makedirs(script_path)
-                    jobName = "Spin" + str(Spin) + "_" + l + "_" + j + "_" + d + \
-                                            "_" + "P" + str(Pdis) + "_" + "BC=" + str(BC) + "_Ncore=" + Ncore \
-                                                + "_seed1=" + str(s[0]) + "_seed2=" + str(s[-1])
+                    jobName = "Spin" + str(Spin) + "_" + l + "_" + j + "_" + d + "_" + "P" + str(Pdis) \
+                                + "_" + "BC=" + str(BC) + "_B" + str(bondDim) + "_Ncore=" + Ncore + "_seed1=" \
+                                    + str(s[0]) + "_seed2=" + str(s[-1])
                     script_name = jobName + "_" + now_time
                     script_path = script_path + "/" + script_name + "_random.sh"
                     output_path = output_path + "/" + script_name + "_random.out"
