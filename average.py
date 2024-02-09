@@ -115,14 +115,20 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
     s2 = parameterlist["seed"]["s2"]
 
     J=scriptCreator.paraList("Jdis",parameterlist["J"])
-    J_num = J.toFlo()
-    J_str = J.toStr()
-    J_100 = J.to100()
+    J_num = J.num_list
+    J_p_num = J.p_num_list
+    J_str = J.str_list
+    J_p_str = J.p_str_list
+    J_s100 = J.s100_list
+    J_p_s100 = J.p_s100_list
 
     D=scriptCreator.paraList("Dim",parameterlist["D"])
-    D_num = D.toFlo()
-    D_str = D.toStr()
-    D_100 = D.to100()
+    D_num = D.num_list
+    D_p_num = D.p_num_list
+    D_str = D.str_list
+    D_p_str = D.p_str_list
+    D_s100 = D.s100_list
+    D_p_s100 = D.p_s100_list
 
     Spin=parameterlist["Spin"]
     Pdis=parameterlist["Pdis"]
@@ -137,9 +143,9 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
     output_dir = record_dir + "/slurmOutput" + "/" + str(BC) + "/B" + str(bondDim)
 
     tSDRG_fileName="/tSDRG_Spin=" + str(Spin) + ";BC=" + str(BC) + ";P="+ str(Pdis) + ";B=" + str(bondDim) \
-        + ";L=" + str(L_num[0]) + "_" + str(L_num[-1]) + "(" + str(L_num[1]-L_num[0])\
-        + ");J=" + str(J_num[0]) + "_" + str(J_num[-1]) +"(" + str(J_100[1]-J_100[0]) \
-        + ");D=" + str(D_num[0]) + "_" + str(D_num[-1]) + "(" + str(D_100[1]-D_100[0]) +");"\
+        + ";L=" + str(L_num[0]) + "_" + str(L_num[-1]) + "(" + str(round(L_num[1]-L_num[0],2))\
+        + ");J=" + str(J_num[0]) + "_" + str(J_num[-1]) +"(" + str(round(J_p_num[2],2)) \
+        + ");D=" + str(D_num[0]) + "_" + str(D_num[-1]) + "(" + str(round(D_p_num[2],2)) +");"\
         + "seed1=" + str(s1) + "_seed2=" + str(s2) + ";Partition=" + str(partition) + ";Number_of_core=" + str(Ncore)
 
     nt=datetime.datetime.now()
@@ -174,19 +180,28 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
                     script_path = script_dir + "/" + l + "/" + j + "/" + d  
                     output_path = output_dir + "/" + l + "/" + j + "/" + d
                     if os.path.exists(script_path):
-                        print("exist : ", script_path)
+                        pass
+                        # print("exist : ", script_path)
                     else:
-                        print("not exist : ", script_path)
+                        # print("not exist : ", script_path)
                         os.makedirs(script_path)
+                        
+                    if os.path.exists(output_path):
+                        pass
+                        # print("exist : ", output_path)
+                    else:
+                        # print("not exist : ", output_path)
+                        os.makedirs(output_path)
+                        
                     jobName = "Spin" + str(Spin) + "_" + l + "_" + j + "_" + d + "_" + "P" + str(Pdis) \
                                 + "_" + "BC=" + str(BC) + "_B" + str(bondDim) + "_Ncore=" + Ncore + "_seed1=" \
                                     + str(s[0]) + "_seed2=" + str(s[-1])
                     script_name = jobName + "_" + now_time
                     script_path = script_path + "/" + script_name + "_random.sh"
                     output_path = output_path + "/" + script_name + "_random.out"
-                    print("jobName : ",jobName)
-                    print("script_path : ",script_path)
-                    print("output_path : ",output_path)
+                    # print("jobName : ",jobName)
+                    # print("script_path : ",script_path)
+                    # print("output_path : ",output_path)
                     context = template.copy()
                     with open(script_path, "w") as file:
                         context[1] = context[1].replace("replace1", "scopion" + str(partition))
@@ -195,15 +210,15 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
                         context[5] = context[5].replace("replace4", output_path)
                         file.writelines(context)
                     os.system( "cd " + tSDRG_path + "/tSDRG/Main_" + Spin)
-                    submit_cmd_list = ["sbatch",script_path, str(Spin),str(L_num[l_i]),str(J_num[j_i]),str(D_num[d_i])\
-                    ,str(bondDim),str(Pdis),str(s[0]),str(s[-1]),check_Or_Not,str(Ncore),output_path]
+                    submit_cmd_list = ["sbatch ",script_path, str(Spin),str(L_num[l_i]),str(J_num[j_i]),str(D_num[d_i])\
+                    ,str(BC),str(bondDim),str(Pdis),str(s[0]),str(s[-1]),check_Or_Not,str(Ncore),tSDRG_path,output_path]
 
                     submit_cmd = " ".join(submit_cmd_list)
                     # "sbatch" + script_path + " " + str(Spin) + " " + str(L_num[l_i]) + " " + str(J_num[j_i]) + \
                     #     " " + str(D_num[d_i]) + " " + str(bondDim) + " " + str(Pdis) + " " + str(s[0]) + " " + str(s[-1]) + \
                     #         " " + check_Or_Not + " " + str(Ncore) + " " + tSDRG_path
                     # print("submit_cmd : ",submit_cmd)
-                    # os.system("sbatch " + script_path + )
+                    os.system(submit_cmd)
     return 0
 # def resubmit(L_str,J_str,D_str,S_num):
 #     for l_i,l in enumerate(L_str):
@@ -211,13 +226,17 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
 #             for d_i,d in enumerate(D_str):
 #                 for s_i in range(len(S_num)):
 #                     for s in S_str[s_i]:
-# def cancel(L_str,J_str,D_str,S_num):
-#     job_list = os.popen("squeue -u aronton -o \"%%.12i %%.12P %%.90j %%.8T\"")
-#     del job_list[0]
-#     for l_i,l in enumerate(L_str):
-#         for j_i,j in enumerate(J_str):
-#             for d_i,d in enumerate(D_str):
-#                 for s_i in range(len(S_num)):
-#                     for s in S_str[s_i]:
+def cancel(L_str,J_str,D_str,S_num):
+    job_list = os.popen("squeue -u aronton -o \"%%.12i %%.12P %%.90j %%.8T\"")
+    del job_list[0]
+    
+    
+    # for l_i,l in enumerate(L_str):
+    #     for j_i,j in enumerate(J_str):
+    #         for d_i,d in enumerate(D_str):
+    #             for s_i in range(len(S_num)):
+    #                 for s in S_str[s_i]:
+                        
+    return 0
 
 submut(parameterlist, Ncore, partition, tSDRG_path)
