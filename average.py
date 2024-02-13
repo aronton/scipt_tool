@@ -1,242 +1,223 @@
-import sys
+import re
 import os
-import datetime
-import scriptCreator
 
-task = input("What is the task? (a)submit, (b)resubmit, (c)cancel Jobs: : \n")
-print(task)
-# parameterlist = {"Spin":None,"L1":None,"L2":None,"delta_L":None,"J1":None,"J2":None,"delta_J":None,\
-#                  "D1":None,"D2":None,"delta_D":None,"Pdis":None,"bondDim":None,"initialSampleNumber":None,\
-#                  "finalSampleNumber":None,"sampleDelta":None,"check_Or_Not":None}
+class paraList:
+    def __init__(self,title,inlist):
+        # self._numlist = list(numlist.values())
+        if ("." in list(inlist.values())[0]) or ("." in list(inlist.values())[1]) or ("." in list(inlist.values())[2]): 
+            self.intOrnot = "N"
+        else:
+            self.intOrnot = "Y"
+        self.p_s100_list = []
+        self.set_p_s100_list(title,list(inlist.values()))
+        # self.p_list = list(inlist.values())
+        self.p_num_list = []
+        self.set_p_num_list(title,list(inlist.values()))
+        self.p_str_list = []
+        self.set_p_str_list(title,self.p_s100_list.copy())
 
-parameterlist = {"Spin":None,"L":{"L1":None,"L2":None,"dL":None},"J":{"J1":None,"J2":None,"dJ":None},\
-                 "D":{"D1":None,"D2":None,"dD":None},"seed":{"s1":None,"s2":None,"ds":None},\
-                 "BC":None,"Pdis":None,"bondDim":None,"dx":None,"check_Or_Not":None}
-Ncore = input("Ncore : \n")
-partition = input("partition : \n")
-print("key in parameter in the following format : \n\
-ex : Spin, L1, L2, delta_L, J1, J2, delta_J, D1, D2, delta_D, Pdis, bondDim, initialSampleNumber, finalSampleNumber, sampleDelta, check_Or_Not\n\
-ex : 15(Spin) 64(L) 1.1(J) 0.1(D) 10(Pdis) 40(bondDim) 1(initialSampleNumber) 20(finalSampleNumber) 5(sampleDelta), Y(check_Or_Not)\n")
+        self.s100_list = []
+        self.set_s100_list(title,self.p_s100_list.copy())
+        self.num_list = []
+        self.set_num_list(title,self.s100_list.copy())
+        self.str_list = []
+        self.set_str_list(title,self.s100_list.copy())
+        
+    def set_p_s100_list(self,title,inlist):
+        if inlist[0] == inlist[1]:
+            
+            l=re.sub("[^0-9]", "", inlist[0])
+            while len(l) < 3:
+                l = l + "0"
+            
+            # l = []
+            # for c in inlist[0]:
+            #     if c.isdigit():
+            #         l.append(c)
+            # l = "".join(l)
+            self.p_s100_list = [l,l,"000"]
+        else:
+            p1=re.sub("[^0-9]", "", inlist[0])
+            if self.intOrnot == "N":
+                while len(p1) < 3:
+                    p1 = p1 + "0"
+                # else:
+                #     p1 = "0" + p1
+            # n1=int(p1)
+            
+            p2=re.sub("[^0-9]", "", inlist[1])
+            if self.intOrnot == "N":
+                while len(p2) < 3:
+                    p2 = p2 + "0"
+                # else:
+                #     p2 = "0" + p2            
+            # n2=int(p2)
+  
+            dp=re.sub("[^0-9]", "", inlist[2])
+            if self.intOrnot == "N":
+                while len(dp) < 3:
+                    dp = dp + "0"
+                # else:
+                #     dp = "0" + dp
+            # dn=int(dp)          
+            self.p_s100_list = [p1,p2,dp] 
+            # if (n2 - n1) % dn == 0:
+            #     self.p_s100_list.append = [p1,p2,dp] 
+            # else:
+            #     print("dp can not divide:")
+            #     inlist[0] = input(inlist[0])
+            #     set_p_s100_list(self,title,inlist)
+                
+        # for s in inlist:
+        #     l = [c for c in s if c.isdigit()]
+        #     if len(l) == 2:
+        #         l.append("0")
+        #     elif len(l) == 1:
+        #         l.append("00")
+        #     x = "".join(l)
+            # x1 = "".join(x)
+            # self.p_s100_list.append = [p1,p2,dp]         
+    def set_p_num_list(self,title,inlist):
+        if inlist[0] == inlist[1]:
+            inlist[2] = "0"
+        l_num = []
+        for s in inlist:
+            l = [c for c in s if c.isdigit()]
+            if "." in s:
+                l.insert(1,".")
+                x = "".join(l)
+                num = float("".join(x))
+            else:
+                x = "".join(l)
+                num = int("".join(x))
+            l_num.append(num)
+        self.p_num_list = l_num
+    def set_p_str_list(self,title,inlist):
+        self.p_str_list = []
+        for s in inlist:
+            self.p_str_list.append(title + s)
+    def set_s100_list(self,title,inlist):
+        if inlist[0] == inlist[1]:
+            l = []
+            l.append(inlist[0])
+        else:
+            n = int((int(inlist[1]) - int(inlist[0]))/int(inlist[2]))
+            l = []
+            for i in range(n+1):
+                if len(str(int(inlist[0]) + i*int(inlist[2])))==2:
+                    l.append("0"+str(int(inlist[0]) + i*int(inlist[2])))
+                elif len(str(int(inlist[0]) + i*int(inlist[2])))==1:
+                    l.append("00"+str(int(inlist[0]) + i*int(inlist[2])))
+                else:
+                    l.append(str(int(inlist[0]) + i*int(inlist[2])))
+        self.s100_list = list(l)
+    def set_num_list(self,title,inlist):
+        l = []
+        if self.intOrnot == "N":
+            for s in inlist:
+                l.append(float(s[0]+"."+s[1]+s[2]))
+        else:
+            for s in inlist:
+                l.append(int(s[0]+s[1]+s[2]))            
+        self.num_list = list(l)
+    def set_str_list(self,title,inlist):
+        l = []
+        for s in inlist:
+            l.append(title + str(int(s)))
+        self.str_list = list(l)
+        
+class Lpara:
+    def __init__(self,title,inlist):
+        self.p_list = list(inlist.values())
+        self.p_num_list = []
+        self.set_p_num_list(title,list(inlist.values()))
+        self.p_s100_list = []
+        self.set_p_s100_list(title,list(inlist.values()))
+        self.p_str_list = []
+        self.set_p_str_list(title,self.p_s100_list.copy())
 
-parameterlist["Spin"]=input("Spin : ")
+        self.s100_list = []
+        self.set_s100_list(title,self.p_s100_list.copy())
+        self.num_list = []
+        self.set_num_list(title,self.s100_list.copy())
+        self.str_list = []
+        self.set_str_list(title,self.s100_list.copy())
+    def set_p_num_list(self,title,inlist):
+        for s in inlist:
+            l = [c for c in s if c.isdigit()]
+            l.insert(1,".")
+            x = "".join(l)
+            x1 = int("".join(x))
+            self.p_num_list.append(x1)
+    def set_p_s100_list(self,title,inlist):
+        for s in inlist:
+            l = [c for c in s if c.isdigit()]
+            if len(l) == 2:
+                l.append("0")
+            x = "".join(l)
+            # x1 = "".join(x)
+            self.p_s100_list.append(x)
+    def set_p_str_list(self,title,inlist):
+        self.p_str_list = []
+        for s in inlist:
+            self.p_str_list.append(title + s)
+    def set_s100_list(self,title,inlist):
+        if inlist[0] == inlist[1]:
+            l = []
+            if len(inlist[0])==2:
+                l.append("0"+str(int(inlist[0]) + int(inlist[2])))
+            else:
+                l.append(str(int(inlist[0]) + int(inlist[2])))
+        else:
+            n = int((int(inlist[1]) - int(inlist[0]))/int(inlist[2]))
+            l = []
+            for i in range(n+1):
+                if len(str(int(inlist[0]) + i*int(inlist[2])))==2:
+                    l.append("0"+str(int(inlist[0]) + i*int(inlist[2])))
+                else:
+                    l.append(str(int(inlist[0]) + i*int(inlist[2])))
+        self.s100_list = list(l)
+    def set_num_list(self,title,inlist):
+        l = []
+        for s in inlist:
+            print(s)
+            l.append(float(s[0]+"."+s[1]+s[2]))
+        self.num_list = list(l)
+    def set_str_list(self,title,inlist):
+        l = []
+        for s in inlist:
+            print(s)
+            l.append(title + s)
+        self.str_list = list(l)
 
-parameterlist["L"]["L1"]=input("L1 : ")
-parameterlist["L"]["L2"]=input("L2 : ")
-parameterlist["L"]["dL"]=input("dL : ")
-
-parameterlist["J"]["J1"]=input("J1 : ")
-parameterlist["J"]["J2"]=input("J2 : ")
-parameterlist["J"]["dJ"]=input("dJ : ")
-
-parameterlist["D"]["D1"]=input("D1 : ")
-parameterlist["D"]["D2"]=input("D2 : ")
-parameterlist["D"]["dD"]=input("dD : ")
-
-parameterlist["seed"]["s1"]=int(input("initialSampleNumber : "))
-parameterlist["seed"]["s2"]=int(input("finalSampleNumber : "))
-parameterlist["seed"]["ds"]=int(input("sampleDelta : "))
-parameterlist["BC"] = input("BC : ")
-parameterlist["Pdis"] = int(input("Pdis : "))
-parameterlist["bondDim"] = int(input("bondDim : "))
-parameterlist["dx"] = int(input("dx : "))
-
-
-# parameterlist["initialSampleNumber"]=int(input("initialSampleNumber : "))
-# parameterlist["finalSampleNumber"]=int(input("finalSampleNumber : "))
-# parameterlist["sampleDelta"]=int(input("sampleDelta : "))
-# mark = parameterlist["check_Or_Not"]
-# while mark != "Y" or mark != "N":
-parameterlist["check_Or_Not"]=input("check_Or_Not(Y/N) : ")
-
-# for j in 
-# print(tSDRG_path)
-
-print(parameterlist,"\n")
-for s in parameterlist:
-    print(s," : ",parameterlist[s])
-
-tSDRG_path="/home/aronton/tSDRG_random"
-
-# for l_i,l in enumerate(L_str):
-#     for j_i,j in enumerate(J_str):
-#         for d_i,d in enumerate(D_str):
-#             for s_i in range(len(S_num)):
-#                 for s in S_str[s_i]:
-#                     parameterlist.append({"Spin":Spin,"L":l,"J":j,"D":d,"P":Pdis,"BC":BC,"seed1":s1,"seed2":s2})
-# tSDRG_record=tSDRG_path + "/tSDRG" + "/Main_" + str(Spin) + "/submit_record"
-# fileName="/tSDRG_Spin=" + str(Spin) + ";BC=" + str(BC) + ";P="+ str(Pdis) + ";B=" + str(bondDim) \
-#     + ";L=" + str(L1) + "_" + str(L2) + "(" + str(dL) + ");J=" + str(J1) + "_" + str(J2) +"(" + str(dJ) + ");D="\
-#     + str(D1) + "_" + str(D2) + "(" + str(dD) +");"\
-#     + "seed1=" + str(s1) + "_seed2=" + str(s2) + ";Partition=" + str(partition) + ";Number_of_core=" + str(Ncore)
-# print(fileName)
-# nt=datetime.datetime.now()
-# now_date = "/" + str(nt.year) + "/" + str(nt.month) + "_" + str(nt.day)
-# now_time = "/" + str(nt.hour) + "_" + str(nt.minute)
-# fileDir=tSDRG_record + now_date + now_time
-# print(fileDir)
-
-# if os.path.exists(fileDir):
-#     print(fileDir)
-# else:
-#     os.makedirs(fileDir)
-
-# file = fileDir + fileName
-# print(file)
-# if [ -d "${fileDir}" ]; then
-#     # 目錄 /path/to/dir 存在
-#     echo -e "${fileDir}"
-# else
-#     # 目錄 /path/to/dir 不存在
-#     echo -e "mkdir -p ""${fileDir}"
-#     mkdir -p "${fileDir}"
-# fi
-
-# file=${fileDir}${fileName}
-
-# echo -e "\n\ntSDRG_Spin="${Spin}";BC=${BC}"";P="${P}";B="${bonDim}";""\n""L="${L1}"_"${L2}"("${space_L}");""\n""J="${J1dis}"_"${J2dis}"("${space_J_100}");""\n""D="${dim1}"_"${dim2}"("${space_D_100}");""\n""seed1="${s1}"_seed2="${s2}";""\n""Partition="${partition}";Number_of_core="${Ncore}"\n\n" >> "${file}.txt"
-
-# echo -e "\n\ntSDRG_Spin="${Spin}";BC=${BC}"";P="${P}";B="${bonDim}";""\n""L="${L1}"_"${L2}"("${space_L}");""\n""J="${J1dis}"_"${J2dis}"("${space_J_100}");""\n""D="${dim1}"_"${dim2}"("${space_D_100}");""\n""seed1="${s1}"_seed2="${s2}";""\n""Partition="${partition}";Number_of_core="${Ncore}"\n\n"
-
-# date >> "${file}.txt"
-
-def submut(parameterlist, Ncore, partition, tSDRG_path):
-
-    p = parameterlist
-
-    L=scriptCreator.Lpara("L",parameterlist["L"])
-    L_num = L.toL()
-    L_str = L.toStr()
-
-
-    S=scriptCreator.Spara("Seed",parameterlist["seed"])
-    S_num = S.toS()
-    S_str = S.toStr()
-    s1 = parameterlist["seed"]["s1"]
-    s2 = parameterlist["seed"]["s2"]
-
-    J=scriptCreator.paraList("Jdis",parameterlist["J"])
-    J_num = J.num_list
-    J_p_num = J.p_num_list
-    J_str = J.str_list
-    J_p_str = J.p_str_list
-    J_s100 = J.s100_list
-    J_p_s100 = J.p_s100_list
-
-    D=scriptCreator.paraList("Dim",parameterlist["D"])
-    D_num = D.num_list
-    D_p_num = D.p_num_list
-    D_str = D.str_list
-    D_p_str = D.p_str_list
-    D_s100 = D.s100_list
-    D_p_s100 = D.p_s100_list
-
-    Spin=parameterlist["Spin"]
-    Pdis=parameterlist["Pdis"]
-    dx=parameterlist["dx"]
-    bondDim=parameterlist["bondDim"]
-    BC=parameterlist["BC"]
-    check_Or_Not=parameterlist["check_Or_Not"]
-
-    tSDRG_record = tSDRG_path + "/tSDRG" + "/Main_" + str(Spin) + "/submit_record"
-    record_dir = tSDRG_path + "/tSDRG" + "/Main_" + str(Spin) + "/jobRecord" 
-    script_dir = record_dir + "/script" + "/" + str(BC) + "/B" + str(bondDim)
-    output_dir = record_dir + "/slurmOutput" + "/" + str(BC) + "/B" + str(bondDim)
-
-    tSDRG_fileName="/tSDRG_Spin=" + str(Spin) + ";BC=" + str(BC) + ";P="+ str(Pdis) + ";B=" + str(bondDim) \
-        + ";L=" + str(L_num[0]) + "_" + str(L_num[-1]) + "(" + str(round(L_num[1]-L_num[0],2))\
-        + ");J=" + str(J_num[0]) + "_" + str(J_num[-1]) +"(" + str(round(J_p_num[2],2)) \
-        + ");D=" + str(D_num[0]) + "_" + str(D_num[-1]) + "(" + str(round(D_p_num[2],2)) +");"\
-        + "seed1=" + str(s1) + "_seed2=" + str(s2) + ";Partition=" + str(partition) + ";Number_of_core=" + str(Ncore)
-
-    nt=datetime.datetime.now()
-    now_year = str(nt.year)
-    now_date = str(nt.year) + "_" + str(nt.month) + "_" + str(nt.day)
-    now_time = "H" + str(nt.hour) + "_M" + str(nt.minute) + "_S" + str(nt.second)
-    
-    tSDRG_fileDir = tSDRG_record + "/" + now_year + "/" + now_date
-
-    if os.path.exists(tSDRG_fileDir):
-        print(tSDRG_fileDir)
-    else:
-        os.makedirs(tSDRG_fileDir)
-
-    tSDRG_filePath = tSDRG_fileDir + tSDRG_fileName + "_" + now_time
-
-    with open(tSDRG_filePath, "wt") as file:
-        file.write(tSDRG_fileName)
-
-    with open("run.sh", "r") as file:
-        template = file.readlines()
-    # print("template : ",template[5])
-    # print(template.copy())
-    # os.system( "cd " + tSDRG_path + "/tSDRG/Main_" + Spin)
-    # print("cd " + tSDRG_path + "/tSDRG/Main_" + Spin)
-    print("tSDRG_filePath : ",tSDRG_filePath)
-    for l_i,l in enumerate(L_str):
-        for j_i,j in enumerate(J_str):
-            for d_i,d in enumerate(D_str):
-                for s_i in range(len(S_num)):
-                    s = S_num[s_i]
-                    script_path = script_dir + "/" + l + "/" + j + "/" + d  
-                    output_path = output_dir + "/" + l + "/" + j + "/" + d
-                    if os.path.exists(script_path):
-                        pass
-                        # print("exist : ", script_path)
-                    else:
-                        # print("not exist : ", script_path)
-                        os.makedirs(script_path)
-                        
-                    if os.path.exists(output_path):
-                        pass
-                        # print("exist : ", output_path)
-                    else:
-                        # print("not exist : ", output_path)
-                        os.makedirs(output_path)
-                        
-                    jobName = "Spin" + str(Spin) + "_" + l + "_" + j + "_" + d + "_" + "P" + str(Pdis) \
-                                + "_" + "BC=" + str(BC) + "_B" + str(bondDim) + "_Ncore=" + Ncore + "_seed1=" \
-                                    + str(s[0]) + "_seed2=" + str(s[-1])
-                    script_name = jobName + "_" + now_time
-                    script_path = script_path + "/" + script_name + "_random.sh"
-                    output_path = output_path + "/" + script_name + "_random.out"
-                    # print("jobName : ",jobName)
-                    # print("script_path : ",script_path)
-                    # print("output_path : ",output_path)
-                    context = template.copy()
-                    with open(script_path, "w") as file:
-                        context[1] = context[1].replace("replace1", "scopion" + str(partition))
-                        context[3] = context[3].replace("replace2", jobName)
-                        context[4] = context[4].replace("replace3", Ncore)
-                        context[5] = context[5].replace("replace4", output_path)
-                        file.writelines(context)
-                    os.system( "cd " + tSDRG_path + "/tSDRG/Main_" + Spin)
-                    submit_cmd_list = ["sbatch ",script_path, str(Spin),str(L_num[l_i]),str(J_num[j_i]),str(D_num[d_i])\
-                    ,str(BC),str(bondDim),str(Pdis),str(s[0]),str(s[-1]),check_Or_Not,str(Ncore),tSDRG_path,output_path]
-
-                    submit_cmd = " ".join(submit_cmd_list)
-                    # "sbatch" + script_path + " " + str(Spin) + " " + str(L_num[l_i]) + " " + str(J_num[j_i]) + \
-                    #     " " + str(D_num[d_i]) + " " + str(bondDim) + " " + str(Pdis) + " " + str(s[0]) + " " + str(s[-1]) + \
-                    #         " " + check_Or_Not + " " + str(Ncore) + " " + tSDRG_path
-                    # print("submit_cmd : ",submit_cmd)
-                    os.system(submit_cmd)
-    return 0
-# def resubmit(L_str,J_str,D_str,S_num):
-#     for l_i,l in enumerate(L_str):
-#         for j_i,j in enumerate(J_str):
-#             for d_i,d in enumerate(D_str):
-#                 for s_i in range(len(S_num)):
-#                     for s in S_str[s_i]:
-def cancel(L_str,J_str,D_str,S_num):
-    job_list = os.popen("squeue -u aronton -o \"%%.12i %%.12P %%.90j %%.8T\"")
-    del job_list[0]
-    
-    
-    # for l_i,l in enumerate(L_str):
-    #     for j_i,j in enumerate(J_str):
-    #         for d_i,d in enumerate(D_str):
-    #             for s_i in range(len(S_num)):
-    #                 for s in S_str[s_i]:
-                        
-    return 0
-
-submut(parameterlist, Ncore, partition, tSDRG_path)
+class Spara:
+    def __init__(self,title,numlist):
+        numlist = list(numlist.values())
+        self.x1 = int(numlist[0])
+        self.x2 = int(numlist[1])
+        self.dx = int(numlist[2])
+        self.title = title
+    def toS(self):
+        numSeed = []
+        for i in list(range(self.x1 ,self.x2, self.dx)):
+            a = [j for j in list(range(i,i+self.dx))]
+            numSeed.append(a)
+        # print(numSeed)
+        # numL = [self.x1 + l*self.dx for l in range(int((self.x2-self.x1)/self.dx) + 1)]
+        return list(numSeed)   
+    def toStr(self):
+        if self.x2>0:
+            strSeed = []
+            for i in list(range(self.x1 ,self.x2,self.dx)):
+                a = [self.title + str(j) for j in list(range(i,i+self.dx))]
+                strSeed.append(a)
+            # numL = [ self.title + str(self.x1 + l*self.dx) for l in range(int((self.x2-self.x1)/self.dx) + 1)]
+        else:
+            strSeed = []
+            for i in list(range(self.x1 ,self.x2,self.dx)):
+                a = [self.title + "N" + str(j) for j in list(range(i,i+self.dx))]
+                strSeed.append(a)
+            # numL = [ self.title + "N" + str((self.x1 + l*self.dx)*-1) for l in range(int((self.x2-self.x1)/self.dx) + 1)]    
+        return list(strSeed)    
+    def __repr__(self):
+        return f'Point({self.x1}, {self.x2}, {self.dx})'
