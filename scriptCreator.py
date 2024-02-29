@@ -25,9 +25,9 @@ class paraList:
         
     def set_p_s100_list(self,title,inlist):
         if inlist[0] == inlist[1]:
-            
+            slen = len(inlist[0])
             l=re.sub("[^0-9]", "", inlist[0])
-            while len(l) < 3:
+            while len(l) < slen:
                 l = l + "0"
             self.p_s100_list = [l,l,"000"]
         else:
@@ -85,7 +85,7 @@ class paraList:
                 l.append(float(s[0]+"."+s[1]+s[2]))
         else:
             for s in inlist:
-                l.append(int(s[0]+s[1]+s[2]))            
+                l.append(int(s))            
         self.num_list = list(l)
     def set_str_list(self,title,inlist):
         l = []

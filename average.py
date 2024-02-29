@@ -51,6 +51,8 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
     L=scriptCreator.paraList("L",parameterlist["L"])
     L_num = L.num_list
     L_str = L.str_list
+    print("L_num:",L_num)
+    print("L_str:",L_str)
     L_p_num = L.p_num_list
 
     S=scriptCreator.Spara("Seed",parameterlist["seed"])
@@ -114,6 +116,9 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
         template = file.readlines()
 
     print("tSDRG_filePath : ",tSDRG_filePath)
+    
+    os.system( "cd " + tSDRG_path + "/tSDRG/Main_" + Spin)
+    
     for l_i,l in enumerate(L_str):
         for j_i,j in enumerate(J_str):
             for d_i,d in enumerate(D_str):
@@ -148,9 +153,9 @@ def submut(parameterlist, Ncore, partition, tSDRG_path):
                         context[4] = context[4].replace("replace3", Ncore)
                         context[5] = context[5].replace("replace4", output_path)
                         file.writelines(context)
-                    os.system( "cd " + tSDRG_path + "/tSDRG/Main_" + Spin)
-                    submit_cmd_list = ["sbatch ",script_path, str(Spin),str(L_num[l_i]),str(J_num[j_i]),str(D_num[d_i])\
-                    ,str(BC),str(bondDim),str(Pdis),str(s[0]),str(s[-1]),check_Or_Not,str(Ncore),tSDRG_path,output_path]
+                    
+                    submit_cmd_list = ["nohup sbatch ",script_path, str(Spin),str(L_num[l_i]),str(J_num[j_i]),str(D_num[d_i])\
+                    ,str(BC),str(bondDim),str(Pdis),str(s[0]),str(s[-1]),check_Or_Not,str(Ncore),tSDRG_path,output_path, ">/dev/null 2>& 1&"]
 
                     submit_cmd = " ".join(submit_cmd_list)
                     os.system(submit_cmd)
